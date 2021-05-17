@@ -130,7 +130,7 @@ def q1Cubic(desiredNumSolutions, write, prnt, outputFile="q1Cubic.csv"):
 		if bool(random.getrandbits(1)):
 			D = -D
 		k = key([A, B, C, D])
-		if not key in solhashs:
+		if not k in solhashs:
 			# Mark we have created this solution already
 			solhashs[k] = True
 			S = 3*A + 2*B + C
@@ -186,7 +186,7 @@ def q1Quadratic(desiredNumSolutions, write, prnt, outputFile="q1Quadratic.csv"):
 		if bool(random.getrandbits(1)):
 			E = -E
 		k = key([A, B, C, D, E])
-		if not key in solhashs:
+		if not k in solhashs:
 			# Mark we have created this solution already
 			solhashs[k] = True
 			S = 4*A + 3*B + 2*C + D
@@ -225,7 +225,7 @@ def q2(desiredNumSolutions, write, prnt, outputFile="q2.csv"):
 		B = randomSymbolic()
 		C = random.randint(0, 5) # the x values we evaluate at
 		k = key([A, B, C])
-		if not key in solhashs:
+		if not k in solhashs:
 			f = A * B
 			fprime = sympy.diff(f, x)
 			S = fprime.subs(x, C)
@@ -237,9 +237,52 @@ def q2(desiredNumSolutions, write, prnt, outputFile="q2.csv"):
 	
 	if write:
 		csvfile.close()
-		
+'''
+Description: Basic Quotient rule
+
+Parameters: A, S
+A = latex() of h(x)
+S = h'(1)
+
+h(x) is a quotient of two polynomials, with a max order on both the numerator and denominator of 3
+'''
+def q3(desiredNumSolutions, write, prnt, outputFile="q3.csv"):
+	print("\n\nQuestion 3:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("A,S")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("A,S\n")
+	while numSols < desiredNumSolutions:
+		# Generate random coefficients. Second term for randomizing inclusion
+		a = random.randint(1, 6) * random.randint(0, 1)
+		b = random.randint(1, 6) * random.randint(0, 1)
+		c = random.randint(1, 6) * random.randint(0, 1)
+		d = random.randint(1, 6) * random.randint(0, 1)
+		num = a*(x**3) + b*(x**2) + c*x + d
+		# Regenerate random coefficients. Second term for randomizing inclusion
+		a = random.randint(1, 6) * random.randint(0, 1)
+		b = random.randint(1, 6) * random.randint(0, 1)
+		c = random.randint(1, 6) * random.randint(0, 1)
+		d = random.randint(1, 6) * random.randint(0, 1)
+		den = a*(x**3) + b*(x**2) + c*x + d
+		h = num / den
+		k = sympy.latex(h)
+		if not k in solhashs:
+			#hstr = sympy.latex(sympy.nsimplify(h))
+			# Generate solution
+			hPrime = sympy.diff(h)
+			S = hPrime.subs(x, 1)
+			numSols += 1
+			if prnt:
+				print(k + "," + sympy.latex(S))
+			
+			
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	q1Cubic(numSols, False, True)
 	q1Quadratic(numSols, False, True)
 	q2(numSols, False, True)
+	q3(numSols, False, True)
