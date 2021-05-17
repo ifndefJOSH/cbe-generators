@@ -1,5 +1,11 @@
 import random
 import csv
+import sympy
+#from sympy
+from sympy.abc import x # This makes it so x is always defined symbolically
+
+def isNum(blah):
+	return isinstance(blah, int) or isinstance(blah, float)
 '''
 CBE 2 Problem auto-generator
 
@@ -10,13 +16,17 @@ For: Dr. Greg Wheeler
 '''
 
 def strPretty(num, showOnes=False):
-	base = str(abs(num))
-	if base == "1" and not showOnes:
-		base = ""
-	if num < 0:
-		return "-" + base
+	if isinstance(num, int) or isinstance(num, float):
+		base = str(abs(num))
+		if base == "1" and not showOnes:
+			base = ""
+		if num < 0:
+			return "-" + base
+		else:
+			return "+" + base
+	# Default to sympy latex printing
 	else:
-		return "+" + base
+		return sympy.latex(num)
 
 '''
 Simple function to create a hash key so we don't duplicate answers
@@ -42,6 +52,32 @@ def printLine(params):
 			print(strPretty(param) + ",", end="")
 		else:
 			print(strPretty(param, True))
+			
+def printSymbolicLine(params):
+	for i in range(len(params) - 1):
+		param = params[i]
+		print(sympy.latex(param) + ",", end="")
+	print(sympy.latex(params[len(params) - 1]))
+'''
+Generates a random short symbolic function for CBE 2 question 2
+'''
+def randomSymbolic():
+	ftype = random.randint(0, 4)
+	# Coefficient multiplied by x to a power, ax^b
+	if ftype == 0:
+		a = random.randint(1, 10)
+		b = random.randint(1, 4) # Max wil be cubed 
+		f = a * (x ** b)
+	# Square root
+	elif ftype == 1:
+		f = sympy.sqrt(x)
+	# Cubed root
+	elif ftype == 2:
+		f = x ** (1 / 3)
+	else:
+		f = sympy.exp(x)
+		
+	return sympy.nsimplify(f) # sympy.Rational(f)
 
 '''
 Simple function to write line to csv file
@@ -69,7 +105,7 @@ WARNING: This does NOT check to make sure there are that many available solution
 This does NOT iterate through them, either, so it's not the most efficient, because it gets random solutions each time.
 '''
 def q1Cubic(desiredNumSolutions, write, prnt, outputFile="q1Cubic.csv"):
-	print("Question 1:\n")
+	print("Question 1A:\n")
 	output = [['A', 'B', 'C', 'D', 'S']]
 	# Create a blank dict to keep track of the used answers so we don't duplicate
 	solhashs = {}
@@ -122,7 +158,7 @@ Solution:
 '''
 
 def q1Quadratic(desiredNumSolutions, write, prnt, outputFile="q1Quadratic.csv"):
-	print("Question 1:\n")
+	print("\n\nQuestion 1B:\n")
 	output = [['A', 'B', 'C', 'D', 'E', 'S']]
 	# Create a blank dict to keep track of the used answers so we don't duplicate
 	solhashs = {}
@@ -165,8 +201,45 @@ def q1Quadratic(desiredNumSolutions, write, prnt, outputFile="q1Quadratic.csv"):
 		csvfile.close()
 		
 	return output
+'''
+Description: Generates product rule CSVs
 
+Parameters: A, B, C, S
+
+f(x) = A(x) * B(x)
+S = f'(C) = A(C) * B'(C) + A'(C) * B(C) (But that's handled via SymPy)
+
+'''
+def q2(desiredNumSolutions, write, prnt, outputFile="q2.csv"):
+	print("\n\nQuestion 2:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("A,B,C,S")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("A,B,C,S\n")
+	while numSols < desiredNumSolutions:
+		# Come up with two random functions:
+		A = randomSymbolic()
+		B = randomSymbolic()
+		C = random.randint(0, 5) # the x values we evaluate at
+		k = key([A, B, C])
+		if not key in solhashs:
+			f = A * B
+			fprime = sympy.diff(f, x)
+			S = fprime.subs(x, C)
+			numSols += 1
+			if prnt:
+				printSymbolicLine([A, B, C, S])
+			if write:
+				writeLine([A, B, C, S], csvfile)
+	
+	if write:
+		csvfile.close()
+		
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	q1Cubic(numSols, False, True)
-	#q1Quadratic(numSols, False, True)
+	q1Quadratic(numSols, False, True)
+	q2(numSols, False, True)
