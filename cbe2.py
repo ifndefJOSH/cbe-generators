@@ -3,6 +3,26 @@ import csv
 import sympy
 #from sympy
 from sympy.abc import x # This makes it so x is always defined symbolically
+from sympy import latex, exp, diff
+
+
+def randomPolynomial(order, mn, mx):
+	f = 0
+	for i in range(0, order + 1):
+		f += random.randint(mn, mx) * (x ** i)
+	return f
+		
+def randomSimpleFract(mn, mx):
+	f = 0
+	while f == 0 or f == 1:
+		f = randomPolynomial(1, mn, mx) / randomPolynomial(1, mn, mx)
+	return f
+
+def randomExponential(order, mn, mx):
+	f = 0
+	for i in range(0, order + 1):
+		f += random.randint(mn, mx) * exp(x * i)
+	return f
 
 def isNum(blah):
 	return isinstance(blah, int) or isinstance(blah, float)
@@ -221,11 +241,15 @@ def q2(desiredNumSolutions, write, prnt, outputFile="q2.csv"):
 		csvfile.write("A,B,C,S\n")
 	while numSols < desiredNumSolutions:
 		# Come up with two random functions:
-		A = randomSymbolic()
-		B = randomSymbolic()
+		A = 0
+		B = 0
+		while A == 0 or B == 0 or A == B:
+			A = randomSymbolic()
+			B = randomSymbolic()
 		C = random.randint(0, 5) # the x values we evaluate at
 		k = key([A, B, C])
 		if not k in solhashs:
+			solhashs[k] = True
 			f = A * B
 			fprime = sympy.diff(f, x)
 			S = fprime.subs(x, C)
@@ -257,20 +281,25 @@ def q3(desiredNumSolutions, write, prnt, outputFile="q3.csv"):
 		csvfile.write("A,S\n")
 	while numSols < desiredNumSolutions:
 		# Generate random coefficients. Second term for randomizing inclusion
-		a = random.randint(1, 6) * random.randint(0, 1)
-		b = random.randint(1, 6) * random.randint(0, 1)
-		c = random.randint(1, 6) * random.randint(0, 1)
-		d = random.randint(1, 6) * random.randint(0, 1)
-		num = a*(x**3) + b*(x**2) + c*x + d
-		# Regenerate random coefficients. Second term for randomizing inclusion
-		a = random.randint(1, 6) * random.randint(0, 1)
-		b = random.randint(1, 6) * random.randint(0, 1)
-		c = random.randint(1, 6) * random.randint(0, 1)
-		d = random.randint(1, 6) * random.randint(0, 1)
-		den = a*(x**3) + b*(x**2) + c*x + d
+		num = 0
+		while num == 0:
+			a = random.randint(1, 6) * random.randint(0, 1)
+			b = random.randint(1, 6) * random.randint(0, 1)
+			c = random.randint(1, 6) * random.randint(0, 1)
+			d = random.randint(1, 6) * random.randint(0, 1)
+			num = a*(x**3) + b*(x**2) + c*x + d
+		den = 0
+		while den == 0 or den == num: # Do not allow denominator to be zero or equal to numerator
+			# Regenerate random coefficients. Second term for randomizing inclusion
+			a = random.randint(1, 6) * random.randint(0, 1)
+			b = random.randint(1, 6) * random.randint(0, 1)
+			c = random.randint(1, 6) * random.randint(0, 1)
+			d = random.randint(1, 6) * random.randint(0, 1)
+			den = a*(x**3) + b*(x**2) + c*x + d
 		h = num / den
 		k = sympy.latex(h)
 		if not k in solhashs:
+			solhashs[k] = True
 			#hstr = sympy.latex(sympy.nsimplify(h))
 			# Generate solution
 			hPrime = sympy.diff(h)
@@ -278,11 +307,111 @@ def q3(desiredNumSolutions, write, prnt, outputFile="q3.csv"):
 			numSols += 1
 			if prnt:
 				print(k + "," + sympy.latex(S))
+			if write:
+				csvfile.write(k + "," + sympy.latex(S) + "\n")
+'''
+Question 4: More product rule. Params A, B, S
+
+s(t) = (f(t))(g(t))
+
+A = f(t)
+B = g(t)
+S = s'(0)
+
+A, B, may either be a random polynomial of order 2 or 3, or may be a simple random fraction of the form (at + b) / (ct + d)
+'''
+def q4(desiredNumSolutions, write, prnt, outputFile="q4.csv"):
+	print("\n\nQuestion 4:\n")
+	t = sympy.Symbol('t')
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("A,B,S")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("A,B,S\n")
+	while numSols < desiredNumSolutions:
+		# Get a single solution
+		f = 0
+		g = 0
+		while f == 0 or g == 0 or f == g:
+			if bool(random.getrandbits(1)):
+				f = randomPolynomial(random.randint(2, 3), -9, 9)
+			else:
+				f = randomSimpleFract(-9, 9)
+			if bool(random.getrandbits(1)):
+				g = randomPolynomial(random.randint(2, 3), -9, 9)
+			else:
+				g = randomSimpleFract(-9, 9)
+		# Swap the variables to t rather than x
+		f = f.subs(x, t)
+		g = g.subs(x, t)
+		s = f * g
+		k = sympy.latex(s)
+		if not k in solhashs:
+			solhashs[k] = True
+			sPrime = sympy.diff(s)
+			S = sPrime.subs(t, 0)
+			numSols += 1
+			if prnt:
+				print(sympy.latex(f) + ',' + sympy.latex(g) + ',' + sympy.latex(S))
+			if write:
+				csvfile.write(sympy.latex(f) + ',' + sympy.latex(g) + ',' + sympy.latex(S) + "\n")
+'''
+Question 5. 
+
+v(t) is either equal to f(t) / g(t) or f(t) * g(t)
+
+f(t) is either a random polynomial of order 1 or 2 or a random exponential of order 1
+g(t) is determined similarly to f(t)
+
+S = v'(0)
+'''
+def q5(desiredNumSolutions, write, prnt, outputFile="q5.csv"):
+	print("\n\nQuestion 5:\n")
+	t = sympy.Symbol('t')
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("A,S")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("A,S\n")
+	while numSols < desiredNumSolutions:
+		# Get a single solution
+		f = 0
+		g = 0
+		while f == 0 or g == 0 or f == g:
+			if bool(random.getrandbits(1)):
+				f = randomPolynomial(random.randint(1, 2), -9, 9)
+			else:
+				f = randomExponential(1, -9, 9)
 			
+			if bool(random.getrandbits(1)):
+				g = randomPolynomial(random.randint(1, 2), -9, 9)
+			else:
+				g = randomExponential(1, -9, 9)
+		# Now that f and g are chosen:
+		if bool(random.getrandbits(1)):
+			v = f * g
+		else:
+			v = f / g
+		k = latex(v.subs(x, t))
+		if not k in solhashs:
+			numSols += 1
+			solhashs[k] = True
+			vPrime = diff(v)
+			S = vPrime.subs(x, 0)
+			if prnt:
+				print(k + ',' + latex(S))
+			if write:
+				csvfile.write(k + ',' + latex(S) + "\n")
 			
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
-	q1Cubic(numSols, False, True)
-	q1Quadratic(numSols, False, True)
+	# q1Cubic(numSols, False, True)
+	# q1Quadratic(numSols, False, True)
 	q2(numSols, False, True)
-	q3(numSols, False, True)
+	# q3(numSols, False, True)
+	# q4(numSols, False, True)
+	#q5(numSols, False, True)
