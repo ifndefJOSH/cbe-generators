@@ -5,111 +5,9 @@ import sympy
 from sympy.abc import x # This makes it so x is always defined symbolically
 from sympy import latex, exp, diff
 
+from sympy import nan
 
-def randomPolynomial(order, mn, mx):
-	f = 0
-	for i in range(0, order + 1):
-		f += random.randint(mn, mx) * (x ** i)
-	return f
-		
-def randomSimpleFract(mn, mx):
-	f = 0
-	while f == 0 or f == 1:
-		f = randomPolynomial(1, mn, mx) / randomPolynomial(1, mn, mx)
-	return f
-
-def randomExponential(order, mn, mx):
-	f = 0
-	for i in range(0, order + 1):
-		f += random.randint(mn, mx) * exp(x * i)
-	return f
-
-def isNum(blah):
-	return isinstance(blah, int) or isinstance(blah, float)
-'''
-CBE 2 Problem auto-generator
-
-Author: Josh Jeppson
-
-For: Dr. Greg Wheeler
-
-'''
-
-def strPretty(num, showOnes=False):
-	if isinstance(num, int) or isinstance(num, float):
-		base = str(abs(num))
-		if base == "1" and not showOnes:
-			base = ""
-		if num < 0:
-			return "-" + base
-		else:
-			return "+" + base
-	# Default to sympy latex printing
-	else:
-		return sympy.latex(num)
-
-'''
-Simple function to create a hash key so we don't duplicate answers
-'''
-def key(params):
-	k = ""
-	for param in params:
-		k += str(param)
-	return k
-'''
-Simple function to print our line of parameters
-'''
-def printLine(params):
-	for i in range(len(params)):
-		param = params[i]
-		if i == 0 and abs(param) != 1:
-			print(str(param) + ",", end="")
-		elif i == 0 and param < 0:
-			print("-,", end="")
-		elif i == 0 and param > 0:
-			print(",", end="")
-		elif i < len(params) - 1:
-			print(strPretty(param) + ",", end="")
-		else:
-			print(strPretty(param, True))
-			
-def printSymbolicLine(params):
-	for i in range(len(params) - 1):
-		param = params[i]
-		print(sympy.latex(param) + ",", end="")
-	print(sympy.latex(params[len(params) - 1]))
-'''
-Generates a random short symbolic function for CBE 2 question 2
-'''
-def randomSymbolic():
-	ftype = random.randint(0, 4)
-	# Coefficient multiplied by x to a power, ax^b
-	if ftype == 0:
-		a = random.randint(1, 10)
-		b = random.randint(1, 4) # Max wil be cubed 
-		f = a * (x ** b)
-	# Square root
-	elif ftype == 1:
-		f = sympy.sqrt(x)
-	# Cubed root
-	elif ftype == 2:
-		f = x ** (1 / 3)
-	else:
-		f = sympy.exp(x)
-		
-	return sympy.nsimplify(f) # sympy.Rational(f)
-
-'''
-Simple function to write line to csv file
-'''
-def writeLine(params, csvfile):
-	strToWrite = ""
-	for param in params:
-		strToWrite += strPretty(param) + ","
-	if params[0] < 0:
-		csvfile.write(strToWrite[0:len(strToWrite) - 1] + "\n")
-	else: # If positive, ignore the first +
-		csvfile.write(strToWrite[1:len(strToWrite) - 1] + "\n")
+from cbefunctions import *
 
 '''
 Function: q1Cubic
@@ -249,10 +147,13 @@ def q2(desiredNumSolutions, write, prnt, outputFile="q2.csv"):
 		C = random.randint(0, 5) # the x values we evaluate at
 		k = key([A, B, C])
 		if not k in solhashs:
-			solhashs[k] = True
 			f = A * B
 			fprime = sympy.diff(f, x)
 			S = fprime.subs(x, C)
+			if S.is_infinite:
+				#print("Skipping infinite solution")
+				continue
+			solhashs[k] = True
 			numSols += 1
 			if prnt:
 				printSymbolicLine([A, B, C, S])
@@ -281,15 +182,15 @@ def q3(desiredNumSolutions, write, prnt, outputFile="q3.csv"):
 		csvfile.write("A,S\n")
 	while numSols < desiredNumSolutions:
 		# Generate random coefficients. Second term for randomizing inclusion
-		num = 0
-		while num == 0:
+		num = 0 
+		while num == 0 or not num.is_algebraic_expr():
 			a = random.randint(1, 6) * random.randint(0, 1)
 			b = random.randint(1, 6) * random.randint(0, 1)
 			c = random.randint(1, 6) * random.randint(0, 1)
 			d = random.randint(1, 6) * random.randint(0, 1)
 			num = a*(x**3) + b*(x**2) + c*x + d
 		den = 0
-		while den == 0 or den == num: # Do not allow denominator to be zero or equal to numerator
+		while den == 0 or den == num or not den.is_algebraic_expr(): # or (num / den).is_constant(): # Do not allow denominator to be zero or equal to numerator
 			# Regenerate random coefficients. Second term for randomizing inclusion
 			a = random.randint(1, 6) * random.randint(0, 1)
 			b = random.randint(1, 6) * random.randint(0, 1)
@@ -304,6 +205,9 @@ def q3(desiredNumSolutions, write, prnt, outputFile="q3.csv"):
 			# Generate solution
 			hPrime = sympy.diff(h)
 			S = hPrime.subs(x, 1)
+			if S.is_infinite:
+				# print("Skipping infinite solution")
+				continue
 			numSols += 1
 			if prnt:
 				print(k + "," + sympy.latex(S))
@@ -349,9 +253,12 @@ def q4(desiredNumSolutions, write, prnt, outputFile="q4.csv"):
 		s = f * g
 		k = sympy.latex(s)
 		if not k in solhashs:
-			solhashs[k] = True
 			sPrime = sympy.diff(s)
 			S = sPrime.subs(t, 0)
+			if S.is_infinite or S == nan:
+				#print("Skipping infinite solution")
+				continue
+			solhashs[k] = True
 			numSols += 1
 			if prnt:
 				print(sympy.latex(f) + ',' + sympy.latex(g) + ',' + sympy.latex(S))
@@ -398,10 +305,13 @@ def q5(desiredNumSolutions, write, prnt, outputFile="q5.csv"):
 			v = f / g
 		k = latex(v.subs(x, t))
 		if not k in solhashs:
-			numSols += 1
-			solhashs[k] = True
 			vPrime = diff(v)
 			S = vPrime.subs(x, 0)
+			if S.is_infinite or S == nan:
+				#print("Skipping infinite solution")
+				continue
+			numSols += 1
+			solhashs[k] = True
 			if prnt:
 				print(k + ',' + latex(S))
 			if write:
@@ -411,7 +321,7 @@ if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	# q1Cubic(numSols, False, True)
 	# q1Quadratic(numSols, False, True)
-	q2(numSols, False, True)
-	# q3(numSols, False, True)
+	#q2(numSols, False, True)
+	#q3(numSols, False, True)
 	# q4(numSols, False, True)
-	#q5(numSols, False, True)
+	q5(numSols, False, True)
