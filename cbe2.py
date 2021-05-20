@@ -120,7 +120,7 @@ def q1Quadratic(desiredNumSolutions, write, prnt, outputFile="q1Quadratic.csv"):
 		
 	return output
 
-def q1General(desiredNumSolutions, write, prnt, outputFile="q1Quadratic.csv"):
+def q1General(desiredNumSolutions, write, prnt, outputFile="q1.csv"):
 	solhashs = {}
 	numSolutions = 0
 	print("A,S")
