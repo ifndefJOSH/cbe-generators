@@ -167,7 +167,7 @@ def q2(desiredNumSolutions, write, prnt, outputFile="q2.csv"):
 		B = 0
 		atype = 0
 		btype = 0
-		while A == 0 or B == 0 or atype == btype: # Don't use the same type. "or A == B" was not needed as it is covered in type
+		while A == 0 or B == 0 or atype == btype: # Don't use the same type. "or A == B" was not needed as equivalence is covered in type
 			[A, atype] = randomSymbolic(0, 3, 3, True)
 			[B, btype] = randomSymbolic(0, 3, 3, True)
 		# Swap order so they show in the defined order.
@@ -212,22 +212,24 @@ def q3(desiredNumSolutions, write, prnt, outputFile="q3.csv"):
 	while numSols < desiredNumSolutions:
 		# Generate random coefficients. Second term for randomizing inclusion
 		num = 0 
-		while num == 0 or not num.is_algebraic_expr():
+		while num == 0 or not num.is_algebraic_expr() or num.is_constant():
 			a = random.randint(1, 6) * random.randint(0, 1)
 			b = random.randint(1, 6) * random.randint(0, 1)
 			c = random.randint(1, 6) * random.randint(0, 1)
-			d = random.randint(1, 6) * random.randint(0, 1)
+			d = random.randint(1, 6) # Numerator always has constant
 			num = a*(x**3) + b*(x**2) + c*x + d
 		den = 0
-		while den == 0 or den == num or not den.is_algebraic_expr(): # or (num / den).is_constant(): # Do not allow denominator to be zero or equal to numerator
+		# This is not the most efficient way to do this...too bad! It gets the job done.
+		while den == 0 or not latex(num / den).startswith("\\frac") or not (num / den).is_algebraic_expr(): # den == num or not den.is_algebraic_expr(): # or (num / den).is_constant(): # Do not allow denominator to be zero or equal to numerator
 			# Regenerate random coefficients. Second term for randomizing inclusion
 			a = random.randint(1, 6) * random.randint(0, 1)
 			b = random.randint(1, 6) * random.randint(0, 1)
 			c = random.randint(1, 6) * random.randint(0, 1)
-			d = random.randint(1, 6) * random.randint(0, 1)
+			d = random.randint(1, 6) # Denominator always has constant
 			den = a*(x**3) + b*(x**2) + c*x + d
 		h = num / den
-		k = sympy.latex(h)
+		# Sympy was automatically simplifying with latex(h)
+		k = "\\frac{" + latex(num) + "}{" + latex(den) + "}"
 		if not k in solhashs:
 			solhashs[k] = True
 			#hstr = sympy.latex(sympy.nsimplify(h))
@@ -351,7 +353,7 @@ if __name__=='__main__':
 	# q1Cubic(numSols, False, True)
 	# q1Quadratic(numSols, False, True)
 	# q1General(numSols, False, True)
-	q2(numSols, False, True)
-	#q3(numSols, False, True)
+	# q2(numSols, False, True)
+	q3(numSols, False, True)
 	# q4(numSols, False, True)
 	# q5(numSols, False, True)
