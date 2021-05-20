@@ -119,6 +119,30 @@ def q1Quadratic(desiredNumSolutions, write, prnt, outputFile="q1Quadratic.csv"):
 		csvfile.close()
 		
 	return output
+
+def q1General(desiredNumSolutions, write, prnt, outputFile="q1Quadratic.csv"):
+	solhashs = {}
+	numSolutions = 0
+	print("A,S")
+	while numSolutions < desiredNumSolutions:
+		# t = Symbol('t')
+		A = random.randint(1, 2) * random.randint(0, 2) # A is bounded to 1-9
+		B = random.randint(1, 3) # B is bounded to 1-9
+		C = random.randint(1, 4) # C is bounded to 1-9
+		D = random.randint(1, 5) # D is bounded to 1-9
+		E = random.randint(1, 10) # D is bounded to 1-9
+		f = A * (x ** 4) + B * (x ** 3) + C * (x ** 2) + D * x + E
+		k = latex(f)
+		if not k in solhashs:
+			solhashs[k] = True
+			fPrime = diff(f)
+			# c = random.randint(-10, 11)
+			S = fPrime
+			if S.is_infinite or S == nan:
+				# print("Skipping infinite solution")
+				continue
+			print(k + ',' + latex(S))
+			numSolutions += 1
 '''
 Description: Generates product rule CSVs
 
@@ -141,9 +165,14 @@ def q2(desiredNumSolutions, write, prnt, outputFile="q2.csv"):
 		# Come up with two random functions:
 		A = 0
 		B = 0
-		while A == 0 or B == 0 or A == B:
-			A = randomSymbolic()
-			B = randomSymbolic()
+		atype = 0
+		btype = 0
+		while A == 0 or B == 0 or atype == btype: # Don't use the same type. "or A == B" was not needed as it is covered in type
+			[A, atype] = randomSymbolic(0, 3, 3, True)
+			[B, btype] = randomSymbolic(0, 3, 3, True)
+		# Swap order so they show in the defined order.
+		if btype < atype:
+			B, A = A, B
 		C = random.randint(0, 5) # the x values we evaluate at
 		k = key([A, B, C])
 		if not k in solhashs:
@@ -321,7 +350,8 @@ if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	# q1Cubic(numSols, False, True)
 	# q1Quadratic(numSols, False, True)
-	#q2(numSols, False, True)
+	# q1General(numSols, False, True)
+	q2(numSols, False, True)
 	#q3(numSols, False, True)
 	# q4(numSols, False, True)
-	q5(numSols, False, True)
+	# q5(numSols, False, True)

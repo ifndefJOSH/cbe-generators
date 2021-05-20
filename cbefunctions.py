@@ -82,12 +82,12 @@ Type 5: f(x) = acos(bx)
 Type 6: f(x) = asin(bx)
 Type 7: f(x) = ln(ax)
 '''
-def randomSymbolic(type1=0, type2=3, polyMaxOrder=3):
-	ftype = random.randint(type1, type2 + 1)
+def randomSymbolic(type1=0, type2=3, polyMaxOrder=3, retType=False):
+	ftype = random.randint(type1, type2)
 	# Coefficient multiplied by x to a power, ax^b
 	if ftype == 0:
 		a = random.randint(1, 10)
-		b = random.randint(1, polyMaxOrder + 1) # Max wil be cubed for default polyMaxOrder of 3
+		b = random.randint(1, polyMaxOrder) # Max wil be cubed for default polyMaxOrder of 3
 		f = a * (x ** b)
 	# Square root
 	elif ftype == 1:
@@ -112,7 +112,10 @@ def randomSymbolic(type1=0, type2=3, polyMaxOrder=3):
 		a = random.randint(1, 10)
 		f = sympy.ln(a * x)
 		
-	return sympy.nsimplify(f) # sympy.Rational(f)
+	if retType:
+		return [sympy.nsimplify(f), ftype] 
+	else:
+		return sympy.nsimplify(f) # sympy.Rational(f)
 
 '''
 Simple function to write line to csv file
