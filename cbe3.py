@@ -153,6 +153,7 @@ def q2Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q2s.csv"):
 		f = ln(h / g) 
 		k = latex(f).replace("log", "ln")
 		if not k in solhashs:
+			solhashs[k] = True
 			fPrime = diff(f)
 			if fPrime.is_infinite:
 				continue
@@ -191,6 +192,7 @@ def q3Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q3s.csv"):
 			f = cbrt(h)
 		k = latex(f)
 		if not k in solhashs:
+			solhashs[k] = True
 			fPrime = diff(f)
 			if fPrime.is_infinite:
 				continue
@@ -200,10 +202,48 @@ def q3Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q3s.csv"):
 				print(k + ',' + S)
 			if write:
 				csvfile.write(k + ',' + S + '\n')
-	
+'''
+Question 4: Logarithmic Differentiation
+
+Either
+
+t^(randomPolynomial)
+
+Or randomPolynomial^(at)
+
+Find the derivative
+'''
+def q4Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q4s.csv"):
+	print("\n\nQuestion 4:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("A,S")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("A,S\n")
+	while numSols < desiredNumSolutions:
+		if bool(random.getrandbits(1)):
+			f = (randomSymbolic(0, 0, 2) + random.randint(1, 5)) ** (random.randint(1, 3) * x)
+		else:
+			f = x ** randomSymbolic(0, 0, 2)
+		k = latex(f.subs(x, t))
+		if not k in solhashs:
+			solhashs[k] = True
+			fPrime = diff(f)
+			if fPrime.is_infinite:
+				continue
+			S = latex(fPrime.subs(x, t))
+			numSols += 1
+			if prnt:
+				print(k + ',' + S)
+			if write:
+				csvfile.write(k + ',' + S + '\n')
+				
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	# q1(numSols, False, True)
 	# q1Symbolic(numSols, False, True)
 	# q2Symbolic(numSols, False, True)
-	q3Symbolic(numSols, False, True)
+	# q3Symbolic(numSols, False, True)
+	q4Symbolic(numSols, False, True)

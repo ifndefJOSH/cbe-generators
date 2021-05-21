@@ -5,6 +5,7 @@ import sympy
 from sympy.abc import x # This makes it so x is always defined symbolically
 from sympy import latex, exp, diff
 
+t = sympy.Symbol('t')
 
 def randomPolynomial(order, mn, mx):
 	f = 0
@@ -128,3 +129,16 @@ def writeLine(params, csvfile):
 		csvfile.write(strToWrite[0:len(strToWrite) - 1] + "\n")
 	else: # If positive, ignore the first +
 		csvfile.write(strToWrite[1:len(strToWrite) - 1] + "\n")
+		
+'''
+Finds a random coefficient, which may be positive, negative, or fractional
+'''
+def randomCoeff(key=9):
+	a = random.randint(1, key)
+	if bool(random.getrandbits(1)):
+		a = sympy.Rational(1 / a)
+	
+	if bool(random.getrandbits(1)):
+		a = -a
+		
+	return a
