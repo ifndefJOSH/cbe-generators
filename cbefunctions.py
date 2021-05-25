@@ -2,7 +2,7 @@ import random
 import csv
 import sympy
 #from sympy
-from sympy.abc import x # This makes it so x is always defined symbolically
+from sympy.abc import x, y # This makes it so x is always defined symbolically
 from sympy import latex, exp, diff
 
 t = sympy.Symbol('t')
@@ -136,9 +136,14 @@ Finds a random coefficient, which may be positive, negative, or fractional
 def randomCoeff(key=9):
 	a = random.randint(1, key)
 	if bool(random.getrandbits(1)):
-		a = sympy.Rational(1 / a)
-	
+		a = sympy.Rational(1, a)
 	if bool(random.getrandbits(1)):
 		a = -a
 		
 	return a
+
+def randomCoeffOrZero(key=9):
+	if bool(random.getrandbits(1)):
+		return 0
+	else:
+		return randomCoeff(key)

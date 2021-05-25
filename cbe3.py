@@ -6,7 +6,10 @@ from sympy.abc import x # This makes it so x is always defined symbolically
 from sympy import latex, exp, diff, pi, sqrt, cbrt
 #from math import pi
 
+from sympy.geometry.util import idiff # implicit differentiation
+
 from sympy import nan, ln
+from sympy import atan, acos, asin
 
 from cbefunctions import *
 
@@ -234,16 +237,120 @@ def q4Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q4s.csv"):
 			if fPrime.is_infinite:
 				continue
 			S = latex(fPrime.subs(x, t))
+			S= S.replace("log", "ln")
 			numSols += 1
 			if prnt:
 				print(k + ',' + S)
 			if write:
 				csvfile.write(k + ',' + S + '\n')
-				
+	
+'''
+Question 5:
+
+Question is of the form:
+
+v(x) = A trig^{-1}(f(x))
+
+Where
+f(x) is a random function. The solution is the derivative.
+'''
+def q5Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q5s.csv"):
+	print("\n\nQuestion 5:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("A,S")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("A,S\n")
+	while numSols < desiredNumSolutions:
+		f = randomSymbolic(0, 2, 3, False) * randomCoeff() # To give us some fractional coefficients
+		A = randomCoeff(20)
+		# Select a random type of trig function
+		trigType = random.randint(1, 3) # 1 - 3
+		if trigType == 1:
+			v = A*atan(f)
+		elif trigType == 2:
+			v = A*acos(f)
+		else:
+			v = A*asin(f)
+		v = v.subs(x, t)
+		k = latex(v)
+		k = k.replace("\\operatorname{atan}", "\\tan^{-1}")
+		k = k.replace("\\operatorname{acos}", "\\cos^{-1}")
+		k = k.replace("\\operatorname{asin}", "\\sin^{-1}")
+		if not k in solhashs:
+			solhashs[k] = True
+			vPrime = diff(v)
+			if vPrime.is_infinite:
+				continue
+			S = latex(vPrime.subs(x, t))
+			S = S.replace("\\operatorname{atan}", "\\tan^{-1}")
+			S = S.replace("\\operatorname{acos}", "\\cos^{-1}")
+			S = S.replace("\\operatorname{asin}", "\\sin^{-1}")
+			numSols += 1
+			if prnt:
+				print(k + ',' + S)
+			if write:
+				csvfile.write(k + ',' + S + '\n')
+			
+'''
+Question 6:
+
+Form: find the slope of the tangent line at a specific point using implicit differentiation.
+
+This just uses sympy's idiff function
+
+CSV Parameters:
+A: f(x, y) == 0
+x = value of x
+y = value of y
+S: dy / dx at (x,y)
+
+For some reason (probably idiff) this one takes a while to run
+'''
+def q6Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q6s.csv"):
+	print("\n\nQuestion 5:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("A,x,y,S")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("A,x,y,S\n")
+	while numSols < desiredNumSolutions:
+		# Get random coefficients
+		a = randomCoeffOrZero()
+		b = randomCoeff()
+		c = randomCoeff()
+		d = randomCoeff()
+		e = randomCoeffOrZero()
+		g = randomCoeff()
+		# f(x, y) = 0 = ax^3 + bx^2y + cxy^2 + dxy + ey^3 + g
+		# For 
+		f = a * (x ** 3) + b * (x ** 2) * y + c * x * (y ** 2) + d * x * y + e * (y ** 3) + g
+		dy_dx = idiff(f, y, x) #.simplify()
+		k = latex(f)
+		if not k in solhashs:
+			solhashs[k] = True
+			if dy_dx.is_infinite:
+				continue # Skip oo solution
+			# Get a random x, y
+			xVal = randomCoeff()
+			yVal = randomCoeff()
+			slope = dy_dx.subs(x, xVal).subs(y, yVal)
+			S = latex(xVal) + "," + latex(yVal) + "," + latex(slope)
+			numSols += 1
+			if prnt:
+				print(k + ',' + S)
+			if write:
+				csvfile.write(k + ',' + S + '\n')
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	# q1(numSols, False, True)
 	# q1Symbolic(numSols, False, True)
 	# q2Symbolic(numSols, False, True)
 	# q3Symbolic(numSols, False, True)
-	q4Symbolic(numSols, False, True)
+	# q4Symbolic(numSols, False, True)
+	# q5Symbolic(numSols, False, True)
+	q6Symbolic(numSols, False, True)
