@@ -1,6 +1,7 @@
 import random
 import csv
 import sympy
+import numpy
 #from sympy
 from sympy.abc import x, y # This makes it so x is always defined symbolically
 from sympy import latex, exp, diff
@@ -153,3 +154,49 @@ def randomCoeffOrZero(key=9):
 		return 0
 	else:
 		return randomCoeff(key)
+	
+'''
+Integrates an array-like numpy object and adds a random coefficient at the end.
+'''
+def numpIntCoeff(a):
+	r = list(a).copy()
+	r.append(randomCoeff())
+	for i in range(len(a) - 1):
+		r[i] /= len(a) - i
+	return r
+'''
+Creates latex for an array-like numpy thing
+
+Uses sympy since we are already.
+'''
+def numTex(a):
+	l = len(a)
+	tex = ""
+	if a[0] < 0:
+		tex += '-'
+	for i in range(l):
+		if a[i] == 0:
+			continue
+		if (not abs(a[i]) == 1) and i < len(a) - 1:
+			tex += latex(sympy.Rational(abs(a[i]))) 
+		if i != len(a) - 1 and l - i - 1 > 1:
+			tex += "x^{" + str(l - i - 1) + "}"
+		elif l - i - 1 == 1:
+			tex += 'x'
+		if i < l - 1 and a[i + 1] > 0:
+			tex += ' + '
+		elif i < l - 1 and a[i + 1] < 0:
+			tex += ' - '
+	tex += latex(abs(a[len(a) - 1]))
+	return tex
+
+def numEval(a, xVal):
+	result = 0
+	for i in range(len(a)):
+		result += a[i] * (xVal ** (len(a) - i - 1))
+	return sympy.Rational(result)
+	
+def isNiceRational(r, howNotNice=20):
+	rat = sympy.Rational(r)
+	return len(latex(rat)) < howNotNice
+		

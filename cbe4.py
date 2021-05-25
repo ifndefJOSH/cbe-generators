@@ -91,7 +91,7 @@ def q4(desiredNumSolutions, write, prnt, outputFile="cbe4q4.csv"):
 				desiredIndex = i
 				
 		S = latex(bestValue)
-		S2 = latex(points[i])
+		S2 = latex(bestPoint)
 		numSols += 1
 		if prnt:
 			print(k + ',' + B + ',' + C + ',' + S + ',' + S2)
@@ -103,9 +103,76 @@ A better version of Q4 that starts with roots and then builds a problem from the
 This one uses numpy
 '''
 def q4Optimized(desiredNumSolutions, write, prnt, outputFile="cbe4q4.csv"):
-	pass
-	# Todo
+	print("\n\nQuestion 4:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("A,B,C,S,S2")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("A,B,C,S,S2\n")
+	while numSols < desiredNumSolutions:
+		# Get roots of random derivative.
+		roots = []
+		for i in range(random.randint(3, 4)):
+			newRoot = randomCoeff()
+			# if not newRoot in roots:
+			roots.append(newRoot)
+		roots.sort()
+		# Bounds always contain roots.
+		bounds = [roots[0] - 1, roots[len(roots) - 1] + 1]
+		fPrime = numpy.poly1d(roots, True)
+		f = numpIntCoeff(fPrime)
+		# Check for stuff like \frac{6004799503160661}{18014398509481984} and the like...
+		meanCoeff = False
+		for c in f:
+			if not isNiceRational(c, 15):
+				meanCoeff = True
+				break
+		if meanCoeff:
+			continue
+		A = numTex(f)
+		if A in solhashs:
+			continue
+		B = latex(bounds[0]) + " \\leq x \\leq " + latex(bounds[1])
+		isMax = bool(random.getrandbits(1))
+		if isMax:
+			C = "maximum"
+		else:
+			C = "minimum"
+		# Get solutions
+		points = roots.copy()
+		points.insert(0, bounds[0])
+		points.append(bounds[1])
+		bestPoint = points[0]
+		bestYValue = numEval(f, bestPoint)
+		ys = [bestYValue]
+		for i in range(1, len(points)):
+			point = points[i]
+			yValue = numEval(f, point)
+			ys.append(yValue)
+			if isMax and (yValue > bestYValue):
+				bestYValue = yValue
+				bestPoint = point
+			elif (not isMax) and (yValue < bestYValue):
+				bestYValue = yValue
+				bestPoint = point
+			else:
+				pass # DO nothing
+		# Test
+		if isMax and max(ys) != bestYValue:
+			print("[ERROR]: Max was found incorrectly. Should have got: " + str(max(ys)) + " but got " + str(bestYValue))
+		elif (not isMax) and min(ys) != bestYValue:
+			print("[ERROR]: Min was found incorrectly")
+		S = latex(bestYValue)
+		S2 = latex(bestPoint)
+		numSols += 1
+		if prnt:
+			print(A + ',' + B + ',' + C + ',' + S + ',' + S2)
+		if write:
+			csvfile.write(A + ',' + B + ',' + C + ',' + S + ',' + S2 + '\n')
+	
 	
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
-	q4(numSols, False, True)
+	q4Optimized(numSols, False, True)
