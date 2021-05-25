@@ -13,6 +13,12 @@ def randomPolynomial(order, mn, mx):
 		f += random.randint(mn, mx) * (x ** i)
 	return f
 		
+def randomPolynomial2(order, key=9):
+	f = 0
+	for i in range(0, order + 1):
+		f += randomCoeff(key) * (x ** i)
+	return f
+
 def randomSimpleFract(mn, mx):
 	f = 0
 	while f == 0 or f == 1:
