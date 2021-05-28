@@ -1,3 +1,13 @@
+'''
+Author: Josh Jeppson
+
+Disclaimer: if you're from Dr. Wheeler's Math 1210 class and you've come to the code thinking that you can
+get solutions, you can't. They're automatically generated. That's the point of these scripts. Plus, because
+of heavy use of the sympy and numpy libraries, you'll have to understand how the math works to even really
+read the code. Too badddd.....no way for you to cheat without actually understanding the math in the first 
+place, which is the point of the CBEs anyway. :/
+'''
+
 import random
 import csv
 import sympy
