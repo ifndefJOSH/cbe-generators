@@ -208,6 +208,14 @@ def numTex(a):
 			tex += ' - '
 	tex += latex(abs(a[len(a) - 1]))
 	return tex
+'''
+Transforms an array of numpy coefficients into a polynomial
+'''
+def arrToSymb(a):
+	p = 0
+	for i in range(len(a)):
+		p += a[i] * (x ** (len(a) - i - 1))
+	return p
 
 def numEval(a, xVal):
 	result = 0
@@ -238,3 +246,15 @@ def oneInflection():
 	fPrime = integrate(fDoublePrime) + randomCoeffOrZero()
 	f = integrate(fPrime) + randomCoeffOrZero()
 	return [f, inflectionPoint]
+
+'''
+Gets a unique number
+
+Works with hashmaps
+'''
+def getUnique(taboo):
+	num = 0
+	while num == 0 or num in taboo:
+		num = randomCoeff()
+	taboo[num] = True
+	return num

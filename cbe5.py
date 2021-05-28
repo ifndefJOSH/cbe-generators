@@ -38,4 +38,46 @@ g: the denominator
 r: the shared root
 l: lim_{x -> r} f / g
 '''
-def q4(desiredNumSolutions, write, prnt, outputFile="cbe5q1.csv"):
+def q1(desiredNumSolutions, write, prnt, outputFile="cbe5q1.csv"):
+	print("\n\nQuestion 1:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,g,r,l")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,g,r,l\n")
+	while numSols < desiredNumSolutions:
+		usedroots = {}
+		fRoots = []
+		gRoots = []
+		# Get roots for polynomials
+		for i in range(random.randint(2, 4)):
+			fRoots.append(getUnique(usedroots))
+			gRoots.append(getUnique(usedroots))
+		commonRoot = getUnique(usedroots)
+		fRoots.append(commonRoot)
+		gRoots.append(commonRoot)
+		f = arrToSymb(list(numpy.poly1d(fRoots, True)))
+		g = arrToSymb(list(numpy.poly1d(gRoots, True)))
+		fl = latex(f)
+		gl = latex(g)
+		k = fl + ':' + gl
+		if k in solhashs:
+			continue
+		solhashs[k] = True
+		numSols += 1
+		fPrime = diff(f)
+		gPrime = diff(g)
+		l = sympy.Rational(fPrime.subs(x, commonRoot) / gPrime.subs(x, commonRoot)) # If error, exception will be thrown here.
+		if prnt:
+			print(fl + ',' + gl + ',' + latex(commonRoot) + ',' + latex(l))
+		if write:
+			csvfile.write(fl + ',' + gl + ',' + latex(commonRoot) + ',' + latex(l) + '\n')
+	if write:
+		csvfile.close()
+		
+		
+if __name__=='__main__':
+	numSols = int(input("How many solutions do you want for each question: "))
+	q1(numSols, False, True)
