@@ -4,7 +4,7 @@ import sympy
 import numpy
 #from sympy
 from sympy.abc import x, y # This makes it so x is always defined symbolically
-from sympy import latex, exp, diff
+from sympy import latex, exp, diff, ln, integrate
 
 t = sympy.Symbol('t')
 
@@ -14,10 +14,14 @@ def randomPolynomial(order, mn, mx):
 		f += random.randint(mn, mx) * (x ** i)
 	return f
 		
-def randomPolynomial2(order, key=9):
+def randomPolynomial2(order, key=9, randomizeInclusion=False):
 	f = 0
 	for i in range(0, order + 1):
-		f += randomCoeff(key) * (x ** i)
+		if randomizeInclusion and bool(random.getrandbits(1)):
+			term = 0
+		else:
+			term = randomCoeff(key) * (x ** i)
+		f += term
 	return f
 
 def randomSimpleFract(mn, mx):
@@ -140,11 +144,11 @@ def writeLine(params, csvfile):
 '''
 Finds a random coefficient, which may be positive, negative, or fractional
 '''
-def randomCoeff(key=9):
+def randomCoeff(key=9, allowFracs=True, allowNegs=True):
 	a = random.randint(1, key)
-	if bool(random.getrandbits(1)):
+	if allowFracs and bool(random.getrandbits(1)):
 		a = sympy.Rational(1, a)
-	if bool(random.getrandbits(1)):
+	if allowNegs and bool(random.getrandbits(1)):
 		a = -a
 		
 	return a
@@ -200,3 +204,22 @@ def isNiceRational(r, howNotNice=20):
 	rat = sympy.Rational(r)
 	return len(latex(rat)) < howNotNice
 		
+		
+'''
+Generates a function with exactly ONE inflection point.
+
+returns both the function, and the x coordinate of the inflection 
+
+Core is a 2nd derivative based on a linear term and constant.
+Optionally, e^x are multiplied
+'''
+def oneInflection():
+	a = randomCoeff(9, False)
+	b = randomCoeff(9, False)
+	fDoublePrime = a*x + b
+	inflectionPoint = -sympy.Rational(b, a)
+	if bool(random.getrandbits(1)):
+		fDoublePrime *= exp(x)
+	fPrime = integrate(fDoublePrime) + randomCoeffOrZero()
+	f = integrate(fPrime) + randomCoeffOrZero()
+	return [f, inflectionPoint]

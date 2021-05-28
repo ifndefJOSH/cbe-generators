@@ -143,6 +143,8 @@ def q1General(desiredNumSolutions, write, prnt, outputFile="q1.csv"):
 				continue
 			print(k + ',' + latex(S))
 			numSolutions += 1
+	if write:
+		csvfile.close()
 '''
 Description: Generates product rule CSVs
 
@@ -244,6 +246,8 @@ def q3(desiredNumSolutions, write, prnt, outputFile="q3.csv"):
 				print(k + "," + sympy.latex(S))
 			if write:
 				csvfile.write(k + "," + sympy.latex(S) + "\n")
+	if write:
+		csvfile.close()
 '''
 Question 4: More product rule. Params A, B, S
 
@@ -295,6 +299,9 @@ def q4(desiredNumSolutions, write, prnt, outputFile="q4.csv"):
 				print(sympy.latex(f) + ',' + sympy.latex(g) + ',' + sympy.latex(S))
 			if write:
 				csvfile.write(sympy.latex(f) + ',' + sympy.latex(g) + ',' + sympy.latex(S) + "\n")
+				
+	if write:
+		csvfile.close()
 '''
 Question 5. 
 
@@ -347,6 +354,9 @@ def q5(desiredNumSolutions, write, prnt, outputFile="q5.csv"):
 				print(k + ',' + latex(S))
 			if write:
 				csvfile.write(k + ',' + latex(S) + "\n")
+				
+	if write:
+		csvfile.close()
 			
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))

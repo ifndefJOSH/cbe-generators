@@ -71,6 +71,8 @@ def q1(desiredNumSolutions, write, prnt, outputFile="cbe3q1.csv"):
 				print(k + ',' + latex(B) + ',' + latex(S))
 			if write:
 				csvfile.write(k + ',' + latex(B) + ',' + latex(S) + '\n')
+	if write:
+		csvfile.close()
 				
 def q1Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q1s.csv"):
 	print("\n\nQuestion 1:\n")
@@ -120,6 +122,8 @@ def q1Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q1s.csv"):
 				print(k + ',' + latex(S).replace("log", "ln")) # In sympy (unlike in written math) log is ln, not log10
 			if write:
 				csvfile.write(k + ',' + latex(S).replace("log", "ln") + '\n')
+	if write:
+		csvfile.close()
 '''
 Question 2:
 
@@ -166,7 +170,8 @@ def q2Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q2s.csv"):
 				print(k + ',' + S)
 			if write:
 				csvfile.write(k + ',' + S + '\n')
-				
+	if write:
+		csvfile.close()
 '''
 Question 3
 
@@ -205,6 +210,8 @@ def q3Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q3s.csv"):
 				print(k + ',' + S)
 			if write:
 				csvfile.write(k + ',' + S + '\n')
+	if write:
+		csvfile.close()
 '''
 Question 4: Logarithmic Differentiation
 
@@ -243,6 +250,8 @@ def q4Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q4s.csv"):
 				print(k + ',' + S)
 			if write:
 				csvfile.write(k + ',' + S + '\n')
+	if write:
+		csvfile.close()
 	
 '''
 Question 5:
@@ -293,6 +302,8 @@ def q5Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q5s.csv"):
 				print(k + ',' + S)
 			if write:
 				csvfile.write(k + ',' + S + '\n')
+	if write:
+		csvfile.close()
 			
 '''
 Question 6:
@@ -345,6 +356,8 @@ def q6Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q6s.csv"):
 				print(k + ',' + S)
 			if write:
 				csvfile.write(k + ',' + S + '\n')
+	if write:
+		csvfile.close()
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	# q1(numSols, False, True)
