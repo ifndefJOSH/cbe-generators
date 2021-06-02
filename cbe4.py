@@ -14,7 +14,7 @@ import sympy
 import numpy
 #from sympy
 from sympy.abc import x # This makes it so x is always defined symbolically
-from sympy import latex, exp, diff, pi, sqrt, cbrt, integrate
+from sympy import latex, exp, diff, pi, sqrt, cbrt, integrate, expand
 from sympy import solve
 #from math import pi
 
@@ -126,15 +126,36 @@ def q4Optimized(desiredNumSolutions, write, prnt, outputFile="cbe4q4.csv"):
 	while numSols < desiredNumSolutions:
 		# Get roots of random derivative.
 		roots = []
-		for i in range(random.randint(3, 4)):
-			newRoot = randomCoeff()
+		for i in range(2): # random.randint(3, 4)):
+			newRoot = random.randint(1, 3) # randomCoeff()
+			if bool(random.getrandbits(1)):
+				newRoot = -newRoot
 			# if not newRoot in roots:
 			roots.append(newRoot)
+		# Optionally create a duplicate root
+		if bool(random.getrandbits(1)):
+			# Create a repeated root
+			roots.append(roots[0])
+		# Optionally create a zero root
+		if bool(random.getrandbits(1)):
+			roots.append(0)
 		roots.sort()
 		# Bounds always contain roots.
 		bounds = [roots[0] - 1, roots[len(roots) - 1] + 1]
-		fPrime = numpy.poly1d(roots, True)
+		if abs(bounds[0]) == bounds[1]:
+			#print("Eliminating symmetric bounds")
+			bounds[1] -= 2
+		fPrime = polyFromRoots(roots) # , True) # [1, 2, 3] -> (x -1)(x-2)(x-3)
+		# Sanity check
+		for r in roots:
+			evl = numEval(fPrime, r) 
+			if evl != 0:
+				print("[ERROR] Poly1d failed for " + numTex(fPrime) + " at root " + str(r) + " evaluated to " + str(evl)) 
 		f = numpIntCoeff(fPrime)
+		# TODO: Multiply by common denominator
+		multFactor = commonDenominator(f)
+		for i in range(len(f)):
+			f[i] *= multFactor
 		# Check for stuff like \frac{6004799503160661}{18014398509481984} and the like...
 		meanCoeff = False
 		for c in f:
@@ -171,11 +192,22 @@ def q4Optimized(desiredNumSolutions, write, prnt, outputFile="cbe4q4.csv"):
 				bestPoint = point
 			else:
 				pass # DO nothing
+		# Sanity Check
+		#for point in points:
+			#if numEval(f, point) == bestYValue and point != bestPoint:
+				#print("[ERROR]: Something went wrong. There is a duplicate best point")
 		# Test
 		if isMax and max(ys) != bestYValue:
 			print("[ERROR]: Max was found incorrectly. Should have got: " + str(max(ys)) + " but got " + str(bestYValue))
 		elif (not isMax) and min(ys) != bestYValue:
 			print("[ERROR]: Min was found incorrectly")
+		# Prevent fractional best points:
+		n, d = sympy.fraction(bestYValue)
+		# print(n, " ", d)
+		bestYValue = n
+		for i in range(len(f)):
+			f[i] *= d
+		A = numTex(f)
 		S = latex(bestYValue)
 		S2 = latex(bestPoint)
 		numSols += 1
@@ -213,7 +245,9 @@ def q6(desiredNumSolutions, write, prnt, outputFile="cbe4q6.csv"):
 		csvfile.write("y,mins,maxs,tinfs\n")
 	while numSols < desiredNumSolutions:
 		# Get a single solution
-		f = randomPolynomial2(random.randint(2, 5), 9, False)
+		f = randomPolynomial2(random.randint(2, 3), 9, False)
+		if bool(random.getrandbits(1)):
+			f = expand(f * x)
 		y = latex(f)
 		if y in solhashs:
 			continue
@@ -331,7 +365,7 @@ def q8(desiredNumSolutions, write, prnt, outputFile="cbe4q8.csv"):
 			u = "up"
 		else:
 			u = "down"
-		fDoublePrime = c*(x - b1)*(x - b1)
+		fDoublePrime = c*(x - b1)*(x - b2)
 		fPrime = integrate(fDoublePrime) + randomCoeffOrZero()
 		f = integrate(fPrime) + randomCoeff()
 		fl = latex(f)
@@ -346,6 +380,6 @@ if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	# q4Optimized(numSols, False, True)
 	# q4Optimized(numSols, False, True, "cbe4q5.csv") # Q5 is the same as Q4
-	q6(numSols, False, True)
+	# q6(numSols, False, True)
 	# q7(numSols, False, True)
-	# q8(numSols, False, True)
+	q8(numSols, False, True)

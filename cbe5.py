@@ -58,8 +58,8 @@ def q1(desiredNumSolutions, write, prnt, outputFile="cbe5q1.csv"):
 		commonRoot = getUnique(usedroots)
 		fRoots.append(commonRoot)
 		gRoots.append(commonRoot)
-		f = arrToSymb(list(numpy.poly1d(fRoots, True)))
-		g = arrToSymb(list(numpy.poly1d(gRoots, True)))
+		f = arrToSymb(list(polyFromRoots(fRoots)))
+		g = arrToSymb(list(polyFromRoots(gRoots)))
 		fl = latex(f)
 		gl = latex(g)
 		k = fl + ':' + gl

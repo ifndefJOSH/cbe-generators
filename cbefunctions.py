@@ -14,7 +14,7 @@ import sympy
 import numpy
 #from sympy
 from sympy.abc import x, y # This makes it so x is always defined symbolically
-from sympy import latex, exp, diff, ln, integrate
+from sympy import latex, exp, diff, ln, integrate, UnevaluatedExpr, fraction
 
 t = sympy.Symbol('t')
 
@@ -191,21 +191,25 @@ Uses sympy since we are already.
 def numTex(a):
 	l = len(a)
 	tex = ""
-	if a[0] < 0:
-		tex += '-'
+	#if a[0] < 0:
+		#tex += '-'
 	for i in range(l):
 		if a[i] == 0:
 			continue
+		if a[i] < 0:
+			tex += ' - '
+		elif i > 0:
+			tex += ' + '
 		if (not abs(a[i]) == 1) and i < len(a) - 1:
 			tex += latex(sympy.Rational(abs(a[i]))) 
 		if i != len(a) - 1 and l - i - 1 > 1:
 			tex += "x^{" + str(l - i - 1) + "}"
 		elif l - i - 1 == 1:
 			tex += 'x'
-		if i < l - 1 and a[i + 1] > 0:
-			tex += ' + '
-		elif i < l - 1 and a[i + 1] < 0:
-			tex += ' - '
+		#if i < l - 1 and a[i + 1] > 0:
+			#tex += ' + '
+		#elif i < l - 1 and a[i + 1] < 0:
+			#tex += ' - '
 	tex += latex(abs(a[len(a) - 1]))
 	return tex
 '''
@@ -258,3 +262,29 @@ def getUnique(taboo):
 		num = randomCoeff()
 	taboo[num] = True
 	return num
+
+'''
+Gets a unique number 2
+
+Works with hashmaps
+'''
+def getUnique2(taboo):
+	num = 0
+	while num == 0 or num in taboo:
+		num = randomCoeff(3, False)
+	taboo[num] = True
+	return num
+
+def commonDenominator(a):
+	# maxD = -999 #some small number
+	denoms = []
+	for item in a:
+		n,d = fraction(item)
+		denoms.append(d)
+	return sympy.lcm(denoms)
+
+def polyFromRoots(roots):
+	f = 1
+	for r in roots:
+		f *= (x - r)
+	return sympy.Poly(sympy.expand(f)).all_coeffs()
