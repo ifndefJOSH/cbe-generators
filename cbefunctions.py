@@ -283,8 +283,17 @@ def commonDenominator(a):
 		denoms.append(d)
 	return sympy.lcm(denoms)
 
-def polyFromRoots(roots):
+def polyFromRoots(roots, forceFirstNotToBeOne=False):
 	f = 1
 	for r in roots:
 		f *= (x - r)
-	return sympy.Poly(sympy.expand(f)).all_coeffs()
+	f2 = sympy.Poly(sympy.expand(f)).all_coeffs()
+	if not forceFirstNotToBeOne:
+		return f2
+	else:
+		f2 = list(f2)
+		cd = commonDenominator(f2)
+		for i in range(len(f2)):
+			f2[i] *= cd
+		return f2 # sympy.Poly(f2)
+	

@@ -141,7 +141,64 @@ def q2(desiredNumSolutions, write, prnt, outputFile="cbe5q2.csv"):
 		
 	if write:
 		csvfile.close()
+		
+'''
+Question 3
+
+Generates two polynomials (max quadratic), both with a root of 1 or -1
+The answer is the limit of the quotient of the two as we approach a common root.
+
+This one doesn't care if multiple roots are shared
+
+TODO: the original had some really easy limits. This one requires at least some factoring
+or L'Hoptial's. Ask Greg if he wants the easy ones, too.
+'''
+
+def q3(desiredNumSolutions, write, prnt, outputFile="cbe5q3.csv"):
+	print("\n\nQuestion 3:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,g,r,l")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,g,r,l\n")
+	while numSols < desiredNumSolutions:
+		if bool(random.getrandbits(1)):
+			r = 1
+		else:
+			r = -1
+		fRoots = [r]
+		gRoots = [r]
+		# Get roots for polynomials
+		if bool(random.getrandbits(1)):
+			fRoots.append(randomCoeff(6, allowFracs=False))
+			
+		if bool(random.getrandbits(1)):
+			gRoots.append(randomCoeff(6, allowFracs=False))
+		
+		f = arrToSymb(polyFromRoots(fRoots, True))
+		g = arrToSymb(polyFromRoots(gRoots, True))
+		fx = latex(f)
+		gx = latex(g)
+		k = fx + gx
+		if k in solhashs:
+			continue
+		# We have a solution
+		solhashs[k] = True
+		numSols += 1
+		l = diff(f).subs(x, r) / diff(g).subs(x, r) # exception will be thrown if error
+		ltex = latex(l)
+		fl = latex(f)
+		gl = latex(g)
+		if prnt:
+			print(fl + ',' + gl + ',' + latex(r) + ',' + ltex)
+		if write:
+			csvfile.write(fl + ',' + gl + ',' + latex(r) + ',' + ltex + '\n')
+	if write:
+		csvfile.close()
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	# q1(numSols, False, True)
-	q2(numSols, False, True)
+	# q2(numSols, False, True)
+	q3(numSols, False, True)
