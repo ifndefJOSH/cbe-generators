@@ -12,6 +12,7 @@ import random
 import csv
 import sympy
 import numpy
+import math
 #from sympy
 from sympy.abc import x # This makes it so x is always defined symbolically
 from sympy import latex, exp, diff, pi, sqrt, cbrt, integrate
@@ -26,6 +27,32 @@ from sympy import atan, acos, asin
 
 from cbefunctions import *
 
+'''
+Helper function for q4
+Function types:
+0: axcos(bx)
+1: axsin(bx)
+2: a + cos(bx)
+3: a + sin(bx)
+4: ax^2
+'''
+def q4RandomFunction():
+	ftype = random.randint(0, 4)
+	a = randomCoeff(6, allowFracs=False)
+	b = randomCoeff(6, allowFracs=False)
+	if ftype == 0:
+		return a * x * cos(b * x)
+	elif ftype == 1:
+		return a * x * sin(b * x)
+	elif ftype == 2:
+		return a + cos(b * x)
+	elif ftype == 3:
+		return a + sin(b * x)
+	elif ftype == 4:
+		return a * (x ** 2)
+	else:
+		raise ValueError("Issue with ftype")
+	
 '''
 Generates two polynomials who share a single root, a.
 
@@ -189,16 +216,56 @@ def q3(desiredNumSolutions, write, prnt, outputFile="cbe5q3.csv"):
 		numSols += 1
 		l = diff(f).subs(x, r) / diff(g).subs(x, r) # exception will be thrown if error
 		ltex = latex(l)
-		fl = latex(f)
-		gl = latex(g)
 		if prnt:
-			print(fl + ',' + gl + ',' + latex(r) + ',' + ltex)
+			print(fx + ',' + gx + ',' + latex(r) + ',' + ltex)
 		if write:
-			csvfile.write(fl + ',' + gl + ',' + latex(r) + ',' + ltex + '\n')
+			csvfile.write(fx + ',' + gx + ',' + latex(r) + ',' + ltex + '\n')
 	if write:
 		csvfile.close()
+		
+'''
+Question 4
+'''
+def q4(desiredNumSolutions, write, prnt, outputFile="cbe5q4.csv"):
+	print("\n\nQuestion 2:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,g,l")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,g,l\n")
+	while numSols < desiredNumSolutions:
+		# Get a single random solution.
+		f = q4RandomFunction()
+		g = q4RandomFunction()
+		fx = latex(f)
+		gx = latex(g)
+		k = fx + gx
+		if k in solhashs:
+			continue
+		# We have a solution
+		solhashs[k] = True
+		lnum = diff(f).subs(x, 0) 
+		lden = (diff(g).subs(x, 0))
+		if lden == 0:
+			continue
+		lVal = lnum / lden
+		#if math.isnan(lVal):
+			#continue
+		l = latex(lVal)
+		numSols += 1
+		if prnt:
+			print(fx + ',' + gx + ',' + l)
+		if write:
+			csvfile.write(fx + ',' + gx + ',' + l + '\n')
+		
+	if write:
+		csvfile.close()
+
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	# q1(numSols, False, True)
 	# q2(numSols, False, True)
-	q3(numSols, False, True)
+	# q3(numSols, False, True)
+	q4(numSols, False, True)
