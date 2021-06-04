@@ -268,10 +268,10 @@ Gets a unique number 2
 
 Works with hashmaps
 '''
-def getUnique2(taboo):
+def getUnique2(taboo, key=5):
 	num = 0
 	while num == 0 or num in taboo:
-		num = randomCoeff(3, False)
+		num = randomCoeff(key, allowFracs=False)
 	taboo[num] = True
 	return num
 

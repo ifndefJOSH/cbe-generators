@@ -16,6 +16,7 @@ import numpy
 from sympy.abc import x # This makes it so x is always defined symbolically
 from sympy import latex, exp, diff, pi, sqrt, cbrt, integrate
 from sympy import solve
+from sympy import sin, cos
 #from math import pi
 
 from sympy.geometry.util import idiff # implicit differentiation
@@ -52,32 +53,95 @@ def q1(desiredNumSolutions, write, prnt, outputFile="cbe5q1.csv"):
 		fRoots = []
 		gRoots = []
 		# Get roots for polynomials
-		for i in range(random.randint(2, 4)):
-			fRoots.append(getUnique(usedroots))
-			gRoots.append(getUnique(usedroots))
-		commonRoot = getUnique(usedroots)
+		for i in range(random.randint(2, 3)):
+			fRoots.append(getUnique2(usedroots))
+			gRoots.append(getUnique2(usedroots))
+		if bool(random.getrandbits(1)):
+			commonRoot = 0
+		else:
+			commonRoot = getUnique(usedroots)
+		# Create common root issue
 		fRoots.append(commonRoot)
 		gRoots.append(commonRoot)
-		f = arrToSymb(list(polyFromRoots(fRoots)))
-		g = arrToSymb(list(polyFromRoots(gRoots)))
+		flist = list(polyFromRoots(fRoots))
+		glist = list(polyFromRoots(gRoots))
+		# Get common denominator for algebraic simplicity
+		fcd = commonDenominator(flist)
+		ggcd = commonDenominator(glist) # ggcd so as not to clash with sympy.gcd
+		for i in range(len(flist)):
+			flist[i] *= fcd
+		for i in range(len(glist)):
+			glist[i] *= ggcd
+		f = arrToSymb(flist)
+		g = arrToSymb(glist)
 		fl = latex(f)
 		gl = latex(g)
 		k = fl + ':' + gl
 		if k in solhashs:
 			continue
 		solhashs[k] = True
-		numSols += 1
 		fPrime = diff(f)
 		gPrime = diff(g)
 		l = sympy.Rational(fPrime.subs(x, commonRoot) / gPrime.subs(x, commonRoot)) # If error, exception will be thrown here.
+		ltex = latex(l)
+		if len(ltex) > 12:
+			continue
+		numSols += 1
 		if prnt:
-			print(fl + ',' + gl + ',' + latex(commonRoot) + ',' + latex(l))
+			print(fl + ',' + gl + ',' + latex(commonRoot) + ',' + ltex)
 		if write:
-			csvfile.write(fl + ',' + gl + ',' + latex(commonRoot) + ',' + latex(l) + '\n')
+			csvfile.write(fl + ',' + gl + ',' + latex(commonRoot) + ',' + ltex + '\n')
 	if write:
 		csvfile.close()
+'''
+Generates questions of the form
+
+lim f / g
+Where f = a + (sin or cos)(b x) and g = cx
+Find the limit as x -> 0. Uses l'hopital's rule.
+
+CSV parameters:
+f : latex of f
+g : latex of g
+l : limit
+'''
+def q2(desiredNumSolutions, write, prnt, outputFile="cbe5q2.csv"):
+	print("\n\nQuestion 2:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,g,l")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,g,l\n")
+	while numSols < desiredNumSolutions:
+		# Get a single random solution.
+		a = randomCoeff(5, allowFracs=False)
+		b = randomCoeff(5, allowFracs=False)
+		c = randomCoeff(5, allowFracs=False)
+		d = randomCoeff(5, allowFracs=False)
+		if bool(random.getrandbits(1)):
+			f = a + b * sin(c * x)
+		else:
+			f = a + b * cos(c * x)
+		g = d * x
+		fx = latex(f)
+		gx = latex(g)
+		k = fx + gx
+		if k in solhashs:
+			continue
+		# We have a solution
+		solhashs[k] = True
+		l = latex(diff(f).subs(x, 0) / d)
+		numSols += 1
+		if prnt:
+			print(fx + ',' + gx + ',' + l)
+		if write:
+			csvfile.write(fx + ',' + gx + ',' + l + '\n')
 		
-		
+	if write:
+		csvfile.close()
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
-	q1(numSols, False, True)
+	# q1(numSols, False, True)
+	q2(numSols, False, True)
