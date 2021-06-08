@@ -29,13 +29,13 @@ def randomPolynomial(order, mn, mx):
 		f += random.randint(mn, mx) * (x ** i)
 	return f
 		
-def randomPolynomial2(order, key=9, randomizeInclusion=False):
+def randomPolynomial2(order, key=9, randomizeInclusion=False, allowFracs=True):
 	f = 0
 	for i in range(0, order + 1):
 		if randomizeInclusion and bool(random.getrandbits(1)):
 			term = 0
 		else:
-			term = randomCoeff(key) * (x ** i)
+			term = randomCoeff(key, allowFracs) * (x ** i)
 		f += term
 	return f
 

@@ -15,7 +15,7 @@ import numpy
 import math
 #from sympy
 from sympy.abc import x # This makes it so x is always defined symbolically
-from sympy import latex, exp, diff, pi, sqrt, cbrt, integrate
+from sympy import latex, exp, diff, pi, sqrt, cbrt, integrate, real_root
 from sympy import solve
 from sympy import sin, cos
 #from math import pi
@@ -263,9 +263,99 @@ def q4(desiredNumSolutions, write, prnt, outputFile="cbe5q4.csv"):
 	if write:
 		csvfile.close()
 
+'''
+Question 5:
+
+(ax + b)^cx OR (ax + b)^c/x
+
+c is allowed fractional. a, b, are not.
+
+Solution limit as we approach 0 from the right
+'''
+def q5(desiredNumSolutions, write, prnt, outputFile="cbe5q5.csv"):
+	pass
+'''
+Generates a function of the form 
+f(x) = u(x)v(x) and asks the user to find
+int(f(x)) + C
+'''
+def q6(desiredNumSolutions, write, prnt, outputFile="cbe5q6.csv"):
+	print("\n\nQuestion 6:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,g,i")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,g,i\n")
+	while numSols < desiredNumSolutions:
+		# Get a single random solution.
+		f = randomPolynomial2(random.randint(1, 2), 5, False, False)
+		g = randomPolynomial2(random.randint(1, 2), 5, False, False)
+		fx = latex(f)
+		gx = latex(g)
+		k = fx + gx
+		if k in solhashs:
+			continue
+		# We have a solution
+		solhashs[k] = True
+		iVal = integrate(f*g, x)
+		i = latex(iVal) + " + C"
+		numSols += 1
+		if prnt:
+			print(fx + ',' + gx + ',' + i)
+		if write:
+			csvfile.write(fx + ',' + gx + ',' + i + '\n')
+		
+	if write:
+		csvfile.close()
+		
+'''
+Generates a function of the form 
+f(x) = u(x)v(x) and asks the user to find
+int(f(x)) + C
+The only difference between this one and the last one is g(x) is a radical
+'''
+def q7(desiredNumSolutions, write, prnt, outputFile="cbe5q.csv"):
+	print("\n\nQuestion 7:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,i")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,i\n")
+	while numSols < desiredNumSolutions:
+		if bool(random.getrandbits(1)):
+			exp = 1
+		else:
+			exp = -1
+		# Get a single random solution.
+		f = randomCoeff(9, False) * (x ** exp)
+		g = sympy.root(x ** random.randint(1, 2), random.randint(2, 4))
+		fx = latex(f * g)
+		#gx = latex(g)
+		k = fx
+		if k in solhashs:
+			continue
+		# We have a solution
+		solhashs[k] = True
+		iVal = integrate(f*g, x)
+		i = latex(iVal) + " + C"
+		numSols += 1
+		if prnt:
+			print(fx + ','  + i)
+		if write:
+			csvfile.write(fx + ',' + i + '\n')
+		
+	if write:
+		csvfile.close()
+
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	# q1(numSols, False, True)
 	# q2(numSols, False, True)
 	# q3(numSols, False, True)
-	q4(numSols, False, True)
+	# q4(numSols, False, True)
+	# q6(numSols, False, True)
+	q7(numSols, False, True)
