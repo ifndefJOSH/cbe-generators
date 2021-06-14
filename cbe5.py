@@ -227,7 +227,7 @@ def q3(desiredNumSolutions, write, prnt, outputFile="cbe5q3.csv"):
 Question 4
 '''
 def q4(desiredNumSolutions, write, prnt, outputFile="cbe5q4.csv"):
-	print("\n\nQuestion 2:\n")
+	print("\n\nQuestion 4:\n")
 	solhashs = {}
 	numSols = 0
 	if prnt:
@@ -270,10 +270,56 @@ Question 5:
 
 c is allowed fractional. a, b, are not.
 
-Solution limit as we approach 0 from the right
+Solution lim (ax + b)^cx = e^(lim a / c)
+
+Solution limit as we approach 0 from the right:
+L'Hopital's rule
+
+l = lim f^g
+ln(l) = ln(lim(f^g))
+ln(l) = lim gln(f)
+l = e^lim(gln(f))
+
+if g = c / x
+	l = e^\infty = \infty
+else if g = c x
+	l = e^0 = 1
 '''
 def q5(desiredNumSolutions, write, prnt, outputFile="cbe5q5.csv"):
-	pass
+	print("\n\nQuestion 4:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,g,l")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,g,l\n")
+	while numSols < desiredNumSolutions:
+		# Generate random solution
+		a = randomCoeff(5, False)
+		b = randomCoeff(5, False)
+		c = randomCoeff(5, True)
+		k = str(a) + str(b) + str(c)
+		# Skip this i
+		if k in solhashs:
+			continue
+		solhashs[k] = True
+		f = latex(a * x  + b)
+		if bool(random.getrandbits(1)):
+			g = latex(c / x)
+			l = '\infty'
+		else:
+			g = latex(c * x)
+			l = '1'
+		numSols += 1
+		if prnt:
+			print(f + ',' + g + ',' + l)
+		if write:
+			csvfile.write(f + ',' + g + ',' + l + '\n')
+		
+	if write:
+		csvfile.close()
+		
 '''
 Generates a function of the form 
 f(x) = u(x)v(x) and asks the user to find
@@ -316,7 +362,7 @@ f(x) = u(x)v(x) and asks the user to find
 int(f(x)) + C
 The only difference between this one and the last one is g(x) is a radical
 '''
-def q7(desiredNumSolutions, write, prnt, outputFile="cbe5q.csv"):
+def q7(desiredNumSolutions, write, prnt, outputFile="cbe5q7.csv"):
 	print("\n\nQuestion 7:\n")
 	solhashs = {}
 	numSols = 0
@@ -350,12 +396,141 @@ def q7(desiredNumSolutions, write, prnt, outputFile="cbe5q.csv"):
 		
 	if write:
 		csvfile.close()
+'''
+Question 8: Same as question 7 but we allow some entropy in the functions
+'''
+def q8(desiredNumSolutions, write, prnt, outputFile="cbe5q8.csv"):
+	print("\n\nQuestion 8:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,i")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,i\n")
+	while numSols < desiredNumSolutions:
+		# Get a single random solution.
+		[f, ftype] = randomSymbolic(0, 6, 4, True)
+		if ftype == 0:
+			continue
+		#gx = latex(g)
+		k = latex(f)
+		if k in solhashs:
+			continue
+		k = k.replace("log", "ln")
+		# We have a solution
+		solhashs[k] = True
+		iVal = integrate(f, x)
+		i = latex(iVal).replace("log", "ln") + " + C"
+		numSols += 1
+		if prnt:
+			print(k + ','  + i)
+		if write:
+			csvfile.write(k + ',' + i + '\n')
+		# print(numSols)
+	if write:
+		csvfile.close()
+		
+'''
+Question 9: initial value problem. The following CSV columns are generated:
 
+fpp: f''(x)
+fpz: f'(0)
+fz: f(0)
+f: f(x)
+'''
+def q9(desiredNumSolutions, write, prnt, outputFile="cbe5q9.csv"):
+	print("\n\nQuestion 9:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("fpp,fpz,fz,f")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("fpp,fpz,fz,f\n")
+	while numSols < desiredNumSolutions:
+		fpp = randomPolynomial2(random.randint(0, 1), allowFracs=False)
+		fppx = latex(fpp)
+		if fppx in solhashs:
+			continue
+		solhashs[fppx] = True
+		numSols += 1
+		# Get the solution for our initial value problem with these initial conditions
+		fpz = random.randint(-9, 9)
+		fz = random.randint(-9, 9)
+		# Integrate twice and include constants of integration c1 and c2, which are determined by initial conditions
+		fp = integrate(fpp, x)
+		# If f'(0) = [What we got for f'(0)] + C1, then C1 = f'(0) = [What we got for f'(0)]
+		c1 = fpz - fp.subs(x, 0)
+		fp += c1
+		# Second integration
+		f = integrate(fp, x)
+		# Same deal here with the constants of integration
+		c2 = fz - f.subs(x, 0)
+		f += c2
+		fx = latex(f)
+		if prnt:
+			print(fppx + ',' + str(fpz) + ',' + str(fz)  + ',' + fx)
+		if write:
+			csvfile.write(fppx + ',' + str(fpz) + ',' + str(fz)  + ',' + fx + '\n')
+	if write:
+		csvfile.close()
+		
+'''
+Q10 is exactly like q9 except f''(x) = asin(x) + bcos(x)
+
+fpp: f''(x)
+fpz: f'(0)
+fz: f(0)
+f: f(x)
+'''
+def q10(desiredNumSolutions, write, prnt, outputFile="cbe5q10.csv"):
+	print("\n\nQuestion 10:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("fpp,fpz,fz,f")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("fpp,fpz,fz,f\n")
+	while numSols < desiredNumSolutions:
+		a = randomCoeff(5, False)
+		b = randomCoeff(5, False)
+		fpp = a * sin(x) + b * cos(x)
+		fppx = latex(fpp)
+		if fppx in solhashs:
+			continue
+		solhashs[fppx] = True
+		numSols += 1
+		# Get the solution for our initial value problem with these initial conditions
+		fpz = random.randint(-9, 9)
+		fz = random.randint(-9, 9)
+		# Integrate twice and include constants of integration c1 and c2, which are determined by initial conditions
+		fp = integrate(fpp, x)
+		# If f'(0) = [What we got for f'(0)] + C1, then C1 = f'(0) = [What we got for f'(0)]
+		c1 = fpz - fp.subs(x, 0)
+		fp += c1
+		# Second integration
+		f = integrate(fp, x)
+		# Same deal here with the constants of integration
+		c2 = fz - f.subs(x, 0)
+		f += c2
+		fx = latex(f)
+		if prnt:
+			print(fppx + ',' + str(fpz) + ',' + str(fz)  + ',' + fx)
+		if write:
+			csvfile.write(fppx + ',' + str(fpz) + ',' + str(fz)  + ',' + fx + '\n')
+	if write:
+		csvfile.close()
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	# q1(numSols, False, True)
 	# q2(numSols, False, True)
 	# q3(numSols, False, True)
 	# q4(numSols, False, True)
+	# q5(numSols, False, True)
 	# q6(numSols, False, True)
-	q7(numSols, False, True)
+	# q7(numSols, False, True)
+	# q8(numSols, False, True)
+	# q9(numSols, False, True)
+	q10(numSols, False, True)
