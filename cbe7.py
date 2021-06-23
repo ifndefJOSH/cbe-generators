@@ -306,6 +306,46 @@ def q5(desiredNumSolutions, write, prnt, outputFile="cbe6q5.csv"):
 			csvfile.write(fTex + ',' + uTex + ',' + lTex + ',' + sTex + '\n')
 	if write:
 		csvfile.close()
+'''
+Question 6 is symbolic integration
+'''
+def q6(desiredNumSolutions, write, prnt, outputFile="cbe6q6.csv"):
+	x = sympy.Symbol('x', real=True) 
+	print("\n\nQuestion 6:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,S")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,S\n")
+	while numSols < desiredNumSolutions:
+		#print("Loop iteration")
+		f = randomCoeff(9) * (x ** random.randint(2, 6)) * ln(x)
+		fTex = latex(f).replace("log", "ln")
+		k = fTex
+		if k in solhashs:
+			continue
+		solhashs[k] = True
+		# Average value = (F(u) - F(l)) / (u - l)
+		s = integrate(f, x)
+		#s = F.subs(x, u) - F.subs(x, l)
+		#print("Got s = " + str(s) + " with " + str(F.subs(x, u)) + " and " + str(F.subs(x, l)))
+		#print("Additionally: F = " + str(F))
+		# s /= (u - l)
+		#print("Got a solution")
+		#if s == sympy.nan or not s.is_real:
+			#print("Solution is either NaN or imaginary", str(s))
+			#continue
+		sTex = latex(s) + " + C"
+		sTex = sTex.replace("log", "ln")
+		numSols += 1
+		if prnt:
+			print(fTex + ',' + sTex)
+		if write:
+			csvfile.write(fTex + ',' + sTex + '\n')
+	if write:
+		csvfile.close()
 		
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
@@ -313,4 +353,5 @@ if __name__=='__main__':
 	#q2(numSols, False, True)
 	#q3(numSols, False, True)
 	#q4(numSols, False, True)
-	q5(numSols, False, True)
+	#q5(numSols, False, True)
+	q6(numSols, False, True)
