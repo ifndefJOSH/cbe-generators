@@ -109,7 +109,7 @@ Type 5: f(x) = acos(bx)
 Type 6: f(x) = asin(bx)
 Type 7: f(x) = ln(ax)
 '''
-def randomSymbolic(type1=0, type2=3, polyMaxOrder=3, retType=False):
+def randomSymbolic(type1=0, type2=3, polyMaxOrder=3, retType=False, maxRand=10):
 	ftype = random.randint(type1, type2)
 	# Coefficient multiplied by x to a power, ax^b
 	if ftype == 0:
@@ -125,18 +125,18 @@ def randomSymbolic(type1=0, type2=3, polyMaxOrder=3, retType=False):
 	elif ftype == 3:
 		f = sympy.exp(x)
 	elif ftype == 4:
-		a = random.randint(1, 10)
+		a = random.randint(1, maxRand)
 		f = sympy.exp(a * x)
 	elif ftype == 5:
-		a = random.randint(1, 10)
-		b = random.randint(1, 10)
+		a = random.randint(1, maxRand)
+		b = random.randint(1, maxRand)
 		f = a * sympy.cos(x * b)
 	elif ftype == 6:
-		a = random.randint(1, 10)
-		b = random.randint(1, 10)
+		a = random.randint(1, maxRand)
+		b = random.randint(1, maxRand)
 		f = a * sympy.sin(x * b)
 	elif ftype == 7:
-		a = random.randint(1, 10)
+		a = random.randint(1, maxRand)
 		f = sympy.ln(a * x)
 		
 	if retType:

@@ -134,6 +134,17 @@ def q1Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q1s.csv"):
 				csvfile.write(k + ',' + latex(S).replace("log", "ln") + '\n')
 	if write:
 		csvfile.close()
+		
+def q2RandomFunction(c=1):
+	fType = random.randint(1, 3)
+	if fType == 1:
+		return [1 / (c * x), fType]
+	elif fType == 2:
+		return [exp(c * x), fType]
+	elif fType == 3:
+		return [sqrt(c * x), fType]
+	else:
+		raise ValueError("Something went wrong in q2RandomFunction()")
 '''
 Question 2:
 
@@ -155,8 +166,8 @@ def q2Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q2s.csv"):
 	while numSols < desiredNumSolutions:
 		[h, htype, g, gtype] = [0, 0, 0, 0] 
 		while htype == gtype or ln(h / g) == 0:
-			[h, htype] = randomSymbolic(0, 6, 3, True)
-			[g, htype] = randomSymbolic(0, 6, 3, True)
+			[h, htype] = q2RandomFunction() #randomSymbolic(0, 6, 3, True, 3)
+			[g, htype] = q2RandomFunction() # randomSymbolic(0, 6, 3, True, 3)
 			if bool(random.getrandbits(1)):
 				h += random.randint(1, 2)
 			else:
@@ -372,8 +383,8 @@ if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	# q1(numSols, False, True)
 	# q1Symbolic(numSols, False, True)
-	# q2Symbolic(numSols, False, True)
+	q2Symbolic(numSols, False, True)
 	# q3Symbolic(numSols, False, True)
 	# q4Symbolic(numSols, False, True)
 	# q5Symbolic(numSols, False, True)
-	q6Symbolic(numSols, False, True)
+	#q6Symbolic(numSols, False, True)
