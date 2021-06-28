@@ -25,7 +25,7 @@ from sympy.geometry.util import idiff # implicit differentiation
 
 from sympy import nan, ln
 from sympy import atan, acos, asin
-from sympy import limit
+from sympy import limit, oo
 
 from cbefunctions import *
 '''
@@ -161,9 +161,176 @@ def q3(desiredNumSolutions, write, prnt, outputFile="cbe1q3.csv"):
 			csvfile.write(fTex + ',' + latex(r) + '^' + side + ',' + sTex + '\n')
 	if write:
 		csvfile.close()
-	
+		
+def q4(desiredNumSolutions, write, prnt, outputFile="cbe1q4.csv"):
+	print("\n\nQuestion 4:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,S")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,S\n")
+	while numSols < desiredNumSolutions:
+		v = randomPolynomial2(random.randint(1, 4), 9, False, True)
+		if v == 0:
+			continue
+		u = randomPolynomial2(random.randint(1, 4), 9, True, True)
+		f = u / v
+		fTex = latex(f)
+		if not "\\frac" in fTex:
+			continue
+		if fTex in solhashs:
+			continue
+		solhashs[fTex] = True
+		s = limit(f, x, oo) # Limit f to infty. Why reinvent the wheel?
+		numSols += 1
+		sTex = latex(s)
+		sTex = sTex.replace("log", "ln")
+		numSols += 1
+		if prnt:
+			print(fTex + ',' + sTex)
+		if write:
+			csvfile.write(fTex + ',' + sTex + '\n')
+	if write:
+		csvfile.close()
+		
+def q5(desiredNumSolutions, write, prnt, outputFile="cbe1q5.csv"):
+	print("\n\nQuestion 5:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,S")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,S\n")
+	while numSols < desiredNumSolutions:
+		a = random.randint(0, 2)
+		b = random.randint(1, 5)
+		c = random.randint(1, 5)
+		d = random.randint(1, 5)
+		p = random.randint(1, 2)
+		if bool(random.getrandbits(1)):
+			tr = sin(x)
+		else:
+			tr = cos(x)
+		f = (a + b * tr) / (c * (x ** p) + d)
+		fTex = latex(f)
+		if fTex in solhashs:
+			continue
+		solhashs[fTex] = True
+		s = 0 # Save some computation time over limit(f, x, oo) # Limit f to infty. Why reinvent the wheel?
+		numSols += 1
+		sTex = latex(s)
+		sTex = sTex.replace("log", "ln")
+		numSols += 1
+		if prnt:
+			print(fTex + ',' + sTex)
+		if write:
+			csvfile.write(fTex + ',' + sTex + '\n')
+	if write:
+		csvfile.close()
+'''
+This time, f is piecewise
+'''
+def q6(desiredNumSolutions, write, prnt, outputFile="cbe1q6.csv"):
+	print("\n\nQuestion 6:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,r,S")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,r,S\n")
+	while numSols < desiredNumSolutions:
+		r = random.randint(-5,5)
+		u = randomPolynomial2(random.randint(1, 2))
+		v = randomPolynomial2(random.randint(1, 2))
+		if bool(random.getrandbits(1)):
+			v = abs(v)
+		elif u == v:
+			continue
+		rTex = latex(r)
+		fTex = "\\begin{cases}" + latex(u) + " & x < " + rTex + "\\\\"
+		fTex += latex(v) + " & x > " + rTex
+		if bool(random.getrandbits(1)):
+			fTex += "\\\\" + str(random.randint(-5,5)) + " & x = " + rTex
+		fTex += "\\end{cases}"
+		if fTex in solhashs:
+			continue
+		solhashs[fTex] = True
+		numSols += 1
+		# Find s
+		l1 = limit(u, x, r, '-')
+		l2 = limit(v, x, r, '+')
+		if l1 == l2:
+			s = l1
+			sTex = latex(s).replace("log", "ln")
+		else:
+			# Limit does not exist
+			sTex = "None"
+		if prnt:
+			print(fTex + ',' + rTex + ',' + sTex)
+		if write:
+			csvfile.write(fTex + ',' + rTex + ',' + sTex + '\n')
+	if write:
+		csvfile.close()
+		
+def q7RandomFunction():
+	a = random.randint(-5, 5)
+	b = random.randint(-5, 5) * random.randint(0, 1)
+	c = random.randint(-5, 5) * random.randint(0, 1)
+	#d = random.randint(-5, 5)
+	return a + b*cos(x) + c * sin(x)
+'''
+Just like q6 except the functions we generate are trig functions
+'''
+def q7(desiredNumSolutions, write, prnt, outputFile="cbe1q6.csv"):
+	print("\n\nQuestion 6:\n")
+	solhashs = {}
+	numSols = 0
+	if prnt:
+		print("f,r,S")
+	if write:
+		csvfile = open(outputFile, 'w')
+		csvfile.write("f,r,S\n")
+	while numSols < desiredNumSolutions:
+		r = random.randint(-5,5) * pi / (2 ** random.randint(0, 2))
+		u = q7RandomFunction()
+		v = q7RandomFunction()
+		if u == v:
+			continue
+		rTex = latex(r)
+		fTex = "\\begin{cases}" + latex(u) + " & x < " + rTex + "\\\\"
+		fTex += latex(v) + " & x > " + rTex
+		if bool(random.getrandbits(1)):
+			fTex += "\\\\" + str(random.randint(-5,5)) + " & x = " + rTex
+		fTex += "\\end{cases}"
+		if fTex in solhashs:
+			continue
+		solhashs[fTex] = True
+		numSols += 1
+		# Find s
+		l1 = limit(u, x, r, '-')
+		l2 = limit(v, x, r, '+')
+		if l1 == l2:
+			s = l1
+			sTex = latex(s).replace("log", "ln")
+		else:
+			# Limit does not exist
+			sTex = "None"
+		if prnt:
+			print(fTex + ',' + rTex + ',' + sTex)
+		if write:
+			csvfile.write(fTex + ',' + rTex + ',' + sTex + '\n')
+	if write:
+		csvfile.close()
 if __name__=='__main__':
 	numSols = int(input("How many solutions do you want for each question: "))
 	#q1(numSols, False, True)
-	q2(numSols, False, True)
+	#q2(numSols, False, True)
 	#q3(numSols, False, True)
+	#q4(numSols, False, True)
+	#q5(numSols, False, True)
+	#q6(numSols, False, True)
+	q7(numSols, False, True)
