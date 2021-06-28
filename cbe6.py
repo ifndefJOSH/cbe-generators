@@ -355,7 +355,7 @@ def q8(desiredNumSolutions, write, prnt, outputFile="cbe6q8.csv"):
 			l, u = u, l # I love Python syntax
 		elif l == u:
 			continue
-		f = randomPolynomial2(1) / x # Just linears
+		f = randomPolynomial2(random.randint(1, 2)) / x # Just linears or quadtratics
 		fTex = latex(f)
 		uTex = latex(u)
 		lTex = latex(l)
@@ -444,7 +444,7 @@ if __name__=='__main__':
 	#q5(numSols, False, True)
 	#q6(numSols, False, True)
 	#q7(numSols, False, True)
-	#q8(numSols, False, True)
-	q9(numSols, False, True)
+	q8(numSols, False, True)
+	#q9(numSols, False, True)
 	#q10(numSols, False, True)
 	

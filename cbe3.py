@@ -138,7 +138,7 @@ def q1Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q1s.csv"):
 def q2RandomFunction(c=1):
 	fType = random.randint(1, 3)
 	if fType == 1:
-		return [1 / (c * x), fType]
+		return [(c * x), fType]
 	elif fType == 2:
 		return [exp(c * x), fType]
 	elif fType == 3:
@@ -167,15 +167,16 @@ def q2Symbolic(desiredNumSolutions, write, prnt, outputFile="cbe3q2s.csv"):
 		[h, htype, g, gtype] = [0, 0, 0, 0] 
 		while htype == gtype or ln(h / g) == 0:
 			[h, htype] = q2RandomFunction() #randomSymbolic(0, 6, 3, True, 3)
-			[g, htype] = q2RandomFunction() # randomSymbolic(0, 6, 3, True, 3)
+			[g, gtype] = q2RandomFunction() # randomSymbolic(0, 6, 3, True, 3)
+			#if htype != 
 			if bool(random.getrandbits(1)):
-				h += random.randint(1, 2)
+				h += random.randint(1, 3)
 			else:
-				h -= random.randint(1, 2)
+				h -= random.randint(1, 3)
 			if bool(random.getrandbits(1)):
-				g += random.randint(1, 2)
+				g += random.randint(1, 3)
 			else: 
-				g -= random.randint(1, 2)
+				g -= random.randint(1, 3)
 				
 		# Now we have something we can use.
 		f = ln(h / g) 
